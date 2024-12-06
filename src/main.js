@@ -1,38 +1,35 @@
-import { fetchImages } from './js/pixabay-api';
-import { renderGallery, clearGallery } from './js/render-functions';
+import { fetchImages } from './js/pixabay-api.js';
+import { renderGallery, clearGallery } from './js/render-functions.js';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
-const form = document.querySelector('#search-form');
-const loader = document.querySelector('.loader');
+const form = document.getElementById('search-form');
+const loader = document.getElementById('loader');
 let currentPage = 1;
-let currentQuery = '';
+let query = '';
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const query = event.target.searchQuery.value.trim();
+  query = form.searchQuery.value.trim();
 
   if (!query) {
-    iziToast.error({ title: 'Error', message: 'Search field cannot be empty!' });
+    iziToast.error({ message: 'Please enter a search query.' });
     return;
   }
 
+  currentPage = 1;
   clearGallery();
   loader.classList.remove('hidden');
-  currentQuery = query;
-  currentPage = 1;
 
   try {
-    const data = await fetchImages(currentQuery, currentPage);
-
+    const data = await fetchImages(query, currentPage);
     if (data.hits.length === 0) {
-      iziToast.info({ title: 'No results', message: 'Try another search term.' });
-      return;
+      iziToast.warning({ message: 'No images found.' });
+    } else {
+      renderGallery(data.hits);
     }
-
-    renderGallery(data.hits);
   } catch (error) {
-    iziToast.error({ title: 'Error', message: 'Failed to fetch images.' });
+    iziToast.error({ message: 'Error fetching images.' });
   } finally {
     loader.classList.add('hidden');
   }
