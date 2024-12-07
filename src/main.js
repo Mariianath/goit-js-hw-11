@@ -1,39 +1,50 @@
-import { fetchImages } from './pixabay-api';
-import { renderGallery, clearGallery } from './render-functions';
-import iziToast from 'izitoast';
+import { renderGallery } from './js/render-functions.js';
+import { fetchImages } from './js/pixabay-api.js';
 import 'izitoast/dist/css/iziToast.min.css';
+import iziToast from 'izitoast';
 
 const form = document.querySelector('#search-form');
-const loader = document.querySelector('.loader');
-let currentPage = 1;
-let currentQuery = '';
+const input = document.querySelector('input[name="searchQuery"]');
+const gallery = document.querySelector('.gallery');
 
-form.addEventListener('submit', async (event) => {
+let currentPage = 1;
+
+form.addEventListener('submit', onSearch);
+
+async function onSearch(event) {
   event.preventDefault();
-  const query = event.target.searchQuery.value.trim();
+  const query = input.value.trim();
 
   if (!query) {
-    iziToast.error({ title: 'Error', message: 'Search field cannot be empty!' });
+    iziToast.warning({
+      title: 'Warning',
+      message: 'Please enter a search query.',
+      position: 'topRight',
+    });
     return;
   }
 
-  clearGallery();
-  loader.classList.remove('hidden');
-  currentQuery = query;
-  currentPage = 1;
+  resetGallery();
 
   try {
-    const data = await fetchImages(currentQuery, currentPage);
+    const { hits, totalHits } = await fetchImages(query, currentPage);
 
-    if (data.hits.length === 0) {
-      iziToast.info({ title: 'No results', message: 'Try another search term.' });
-      return;
-    }
+    iziToast.success({
+      title: 'Success',
+      message: `Found ${totalHits} images!`,
+      position: 'topRight',
+    });
 
-    renderGallery(data.hits);
+    renderGallery(hits);
   } catch (error) {
-    iziToast.error({ title: 'Error', message: 'Failed to fetch images.' });
-  } finally {
-    loader.classList.add('hidden');
+    iziToast.error({
+      title: 'Error',
+      message: error.message || 'Something went wrong. Please try again later.',
+      position: 'topRight',
+    });
   }
-});
+}
+
+function resetGallery() {
+  gallery.innerHTML = '';
+}

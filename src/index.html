@@ -4,19 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Image Search</title>
-  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="stylesheet" href="/src/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.10.3/simple-lightbox.min.css" />
 </head>
 <body>
-  <header>
-    <form id="search-form">
-      <input type="text" name="searchQuery" placeholder="Search images..." />
-      <button type="submit">Search</button>
-    </form>
-  </header>
-  <main>
-    <section class="gallery"></section>
-    <div class="loader hidden"></div>
-  </main>
+  <div class="container">
+    <header>
+      <form id="search-form" class="search-form">
+        <input
+          type="text"
+          name="searchQuery"
+          placeholder="Search images..."
+          autocomplete="off"
+        />
+        <button type="submit">Search</button>
+      </form>
+    </header>
+    <main>
+      <div id="loading" class="loading" style="display: none;">Loading images, please wait...</div>
+      <div id="error-message" class="error-message" style="display: none;"></div>
+      <div class="gallery"></div>
+    </main>
+  </div>
   <script type="module" src="./main.js"></script>
 </body>
 </html>
