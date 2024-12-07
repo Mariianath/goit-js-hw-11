@@ -1,33 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Search</title>
-  <link rel="stylesheet" href="/src/css/styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.10.3/simple-lightbox.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.11.0/simple-lightbox.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css" />
   <script type="module" crossorigin src="/goit-js-hw-11/index.js"></script>
-  <link rel="modulepreload" crossorigin href="/goit-js-hw-11/assets/vendor-I1I71QQ2.js">
-  <link rel="stylesheet" crossorigin href="/goit-js-hw-11/assets/vendor-DnveWo0P.css">
+  <link rel="modulepreload" crossorigin href="/goit-js-hw-11/assets/vendor-BrddEoy-.js">
+  <link rel="stylesheet" crossorigin href="/goit-js-hw-11/assets/vendor-CWKLx11g.css">
+  <link rel="stylesheet" crossorigin href="/goit-js-hw-11/assets/index-DvPDDfy5.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <form id="search-form" class="search-form">
-        <input
-          type="text"
-          name="searchQuery"
-          placeholder="Search images..."
-          autocomplete="off"
-        />
-        <button type="submit">Search</button>
-      </form>
-    </header>
-    <main>
-      <div id="loading" class="loading" style="display: none;">Loading images, please wait...</div>
-      <div id="error-message" class="error-message" style="display: none;"></div>
-      <div class="gallery"></div>
-    </main>
-  </div>
+  <form id="search-form">
+    <input type="text" name="searchQuery" placeholder="Search images..." />
+    <button type="submit">Search</button>
+  </form>
+  <div class="gallery"></div>
 </body>
 </html>
