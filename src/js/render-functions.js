@@ -23,7 +23,6 @@ export function renderGallery(images) {
 
   gallery.innerHTML = markup;
 
-  // Ініціалізація SimpleLightbox
   const lightbox = new SimpleLightbox('.gallery a');
   lightbox.refresh();
 }
