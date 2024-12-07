@@ -6,7 +6,6 @@ import iziToast from 'izitoast';
 const form = document.querySelector('#search-form');
 const input = document.querySelector('input[name="searchQuery"]');
 const gallery = document.querySelector('.gallery');
-
 let currentPage = 1;
 
 form.addEventListener('submit', onSearch);

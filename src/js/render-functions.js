@@ -1,3 +1,6 @@
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
 export function renderGallery(images) {
   const gallery = document.querySelector('.gallery');
   const markup = images
@@ -20,6 +23,7 @@ export function renderGallery(images) {
 
   gallery.innerHTML = markup;
 
+  // Ініціалізація SimpleLightbox
   const lightbox = new SimpleLightbox('.gallery a');
   lightbox.refresh();
 }
