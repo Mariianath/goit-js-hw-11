@@ -2,22 +2,27 @@ import { defineConfig } from 'vite';
 import { glob } from 'glob';
 import injectHTML from 'vite-plugin-html-inject';
 import FullReload from 'vite-plugin-full-reload';
-import SortCss from 'postcss-sort-media-queries';
+import postcssSortMediaQueries from 'postcss-sort-media-queries';
+import dotenv from 'dotenv';
+
+// Завантажуємо змінні з key.env
+dotenv.config({ path: './key.env' });
 
 export default defineConfig(({ command }) => {
   return {
     define: {
+      'process.env': process.env, // Додаємо змінні середовища
       [command === 'serve' ? 'global' : '_global']: {},
     },
-    root: 'src',
+    root: 'src', // Вказуємо корінь проєкту
     build: {
       sourcemap: true,
       rollupOptions: {
-        input: glob.sync('./src/*.html'),
+        input: glob.sync('./src/*.html'), // Підтримка кількох HTML-файлів
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
-              return 'vendor';
+              return 'vendor'; // Виносимо залежності в окремий файл
             }
           },
           entryFileNames: chunkInfo => {
@@ -34,15 +39,24 @@ export default defineConfig(({ command }) => {
           },
         },
       },
-      outDir: '../dist',
+      outDir: '../dist', // Вихідна папка
       emptyOutDir: true,
     },
+    css: {
+      postcss: {
+        plugins: [
+          postcssSortMediaQueries({
+            sort: 'mobile-first', // Сортуємо медіа-запити
+          }),
+        ],
+      },
+    },
     plugins: [
-      injectHTML(),
-      FullReload(['./src/**/**.html']),
-      SortCss({
-        sort: 'mobile-first',
-      }),
+      injectHTML(), // Вставка HTML
+      FullReload(['./src/**/*.html']), // Повне перезавантаження при зміні HTML
     ],
+    server: {
+      open: true, // Відкрити у браузері при запуску
+    },
   };
 });
