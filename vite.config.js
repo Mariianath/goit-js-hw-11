@@ -11,8 +11,7 @@ dotenv.config({ path: './key.env' });
 export default defineConfig(({ command }) => {
   return {
     define: {
-      'process.env': process.env, // Додаємо змінні середовища
-      [command === 'serve' ? 'global' : '_global']: {},
+      'process.env.VITE_API_KEY': JSON.stringify(process.env.VITE_API_KEY), // Додаємо API-ключ
     },
     root: 'src', // Вказуємо корінь проєкту
     build: {
@@ -25,18 +24,8 @@ export default defineConfig(({ command }) => {
               return 'vendor'; // Виносимо залежності в окремий файл
             }
           },
-          entryFileNames: chunkInfo => {
-            if (chunkInfo.name === 'commonHelpers') {
-              return 'commonHelpers.js';
-            }
-            return '[name].js';
-          },
-          assetFileNames: assetInfo => {
-            if (assetInfo.name && assetInfo.name.endsWith('.html')) {
-              return '[name].[ext]';
-            }
-            return 'assets/[name]-[hash][extname]';
-          },
+          entryFileNames: '[name].js',
+          assetFileNames: 'assets/[name]-[hash][extname]',
         },
       },
       outDir: '../dist', // Вихідна папка
