@@ -1,4 +1,4 @@
-const API_KEY = import.meta.env.VITE_PIXABAY_API_KEY;
+const API_KEY = import.meta.env.VITE_API_KEY;
 
 const BASE_URL = 'https://pixabay.com/api/';
 
