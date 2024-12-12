@@ -3,62 +3,79 @@ import { fetchImages } from './js/pixabay-api.js';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
+// Ініціалізація глобальних змінних
 const form = document.querySelector('#search-form');
 const input = document.querySelector('input[name="searchQuery"]');
 const gallery = document.querySelector('.gallery');
-let currentPage = 1;
-let currentQuery = '';
+const loader = document.querySelector('.loader'); // Елемент для індикатора завантаження
 
+let currentPage = 1;
+let currentQuery = ''; // Відстеження останнього запиту
+
+// Івенти
 form.addEventListener('submit', onSearch);
 
 async function onSearch(event) {
   event.preventDefault();
-  const query = input.value.trim();
 
+  const query = input.value.trim();
   if (!query) {
-    iziToast.warning({
-      title: 'Warning',
-      message: 'Please enter a search query.',
-      position: 'topRight',
-    });
+    showWarning('Please enter a search query.');
     return;
   }
 
   if (query !== currentQuery) {
-    // Оновлюємо пошуковий запит
-    currentQuery = query;
-    currentPage = 1;
-    resetGallery();
+    resetGallery(); // Скидаємо галерею лише при новому запиті
+    currentPage = 1; // Скидаємо сторінку
   }
+  currentQuery = query;
 
   try {
-    const { hits, totalHits } = await fetchImages(query, currentPage);
+    toggleLoader(true); // Показуємо завантажувач
 
+    const { hits, totalHits } = await fetchImages(query, currentPage);
     if (hits.length === 0) {
-      iziToast.warning({
-        title: 'No Results',
-        message: 'No images found. Try another search query.',
-        position: 'topRight',
-      });
+      showWarning('No images found for your query. Try again!');
       return;
     }
 
-    iziToast.success({
-      title: 'Success',
-      message: `Found ${totalHits} images!`,
-      position: 'topRight',
-    });
-
+    showSuccess(`Found ${totalHits} images!`);
     renderGallery(hits);
   } catch (error) {
-    iziToast.error({
-      title: 'Error',
-      message: error.message || 'Something went wrong. Please try again later.',
-      position: 'topRight',
-    });
+    showError(error.message || 'Something went wrong. Please try again later.');
+  } finally {
+    toggleLoader(false); // Ховаємо завантажувач після виконання
   }
 }
 
 function resetGallery() {
   gallery.innerHTML = '';
+}
+
+function toggleLoader(show) {
+  loader.style.display = show ? 'block' : 'none';
+}
+
+function showWarning(message) {
+  iziToast.warning({
+    title: 'Warning',
+    message,
+    position: 'topRight',
+  });
+}
+
+function showSuccess(message) {
+  iziToast.success({
+    title: 'Success',
+    message,
+    position: 'topRight',
+  });
+}
+
+function showError(message) {
+  iziToast.error({
+    title: 'Error',
+    message,
+    position: 'topRight',
+  });
 }
