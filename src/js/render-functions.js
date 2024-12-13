@@ -3,6 +3,16 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 export function renderGallery(images) {
   const gallery = document.querySelector('.gallery');
+  if (!gallery) {
+    console.error('Gallery element not found.');
+    return;
+  }
+
+  if (!images || images.length === 0) {
+    gallery.innerHTML = '<p class="no-results">No images to display.</p>';
+    return;
+  }
+
   const markup = images
     .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
       return `
@@ -21,7 +31,7 @@ export function renderGallery(images) {
     })
     .join('');
 
-  gallery.innerHTML = markup;
+  gallery.innerHTML += markup;
 
   const lightbox = new SimpleLightbox('.gallery a');
   lightbox.refresh();

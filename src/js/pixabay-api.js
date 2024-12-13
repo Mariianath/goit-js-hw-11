@@ -1,5 +1,4 @@
 const API_KEY = import.meta.env.VITE_API_KEY;
-
 const BASE_URL = 'https://pixabay.com/api/';
 
 export async function fetchImages(query, page = 1, perPage = 12) {
@@ -12,7 +11,13 @@ export async function fetchImages(query, page = 1, perPage = 12) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+
+    if (!data.hits || !data.totalHits) {
+      throw new Error('Invalid response format from API.');
+    }
+
+    return data;
   } catch (error) {
     console.error('Error fetching images:', error);
     throw error;

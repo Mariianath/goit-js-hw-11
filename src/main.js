@@ -9,8 +9,8 @@ const gallery = document.querySelector('.gallery');
 const loader = document.querySelector('.loader'); // Елемент для індикатора завантаження
 
 let currentPage = 1;
-let currentQuery = ''; 
-
+let currentQuery = '';
+const perPage = 12; // Кількість зображень на сторінку
 
 form.addEventListener('submit', onSearch);
 
@@ -24,26 +24,30 @@ async function onSearch(event) {
   }
 
   if (query !== currentQuery) {
-    resetGallery(); 
-    currentPage = 1; 
+    resetGallery(); // Очистити галерею, якщо пошуковий запит змінився
+    currentPage = 1; // Скинути номер сторінки
   }
   currentQuery = query;
 
   try {
-    toggleLoader(true); 
+    toggleLoader(true); // Показати індикатор завантаження
 
-    const { hits, totalHits } = await fetchImages(query, currentPage);
-    if (hits.length === 0) {
+    const { hits, totalHits } = await fetchImages(query, currentPage, perPage);
+    if (!hits || hits.length === 0) {
       showWarning('No images found for your query. Try again!');
       return;
     }
 
-    showSuccess(`Found ${totalHits} images!`);
+    if (currentPage === 1) {
+      showSuccess(`Found ${totalHits} images!`);
+    }
+
     renderGallery(hits);
+    addInfiniteScroll(totalHits); // Додати нескінченний скролл
   } catch (error) {
     showError(error.message || 'Something went wrong. Please try again later.');
   } finally {
-    toggleLoader(false); 
+    toggleLoader(false); // Сховати індикатор завантаження
   }
 }
 
@@ -77,4 +81,31 @@ function showError(message) {
     message,
     position: 'topRight',
   });
+}
+
+// Нескінченний скролл
+function addInfiniteScroll(totalHits) {
+  const observer = new IntersectionObserver(async (entries) => {
+    if (entries[0].isIntersecting) {
+      if (currentPage * perPage >= totalHits) {
+        showWarning('You have reached the end of the results.');
+        observer.disconnect();
+        return;
+      }
+
+      currentPage++;
+      toggleLoader(true);
+      try {
+        const { hits } = await fetchImages(currentQuery, currentPage, perPage);
+        renderGallery(hits);
+      } catch (error) {
+        showError('Error loading more images.');
+      } finally {
+        toggleLoader(false);
+      }
+    }
+  }, { threshold: 1.0 });
+
+  const sentinel = document.querySelector('.sentinel');
+  if (sentinel) observer.observe(sentinel);
 }
