@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Image Search</title>
-  <link rel="stylesheet" href="./css/styles.css" />
-</head>
-<body>
-  <form class="search-form">
-    <input
-      type="text"
-      name="searchQuery"
-      autocomplete="off"
-      placeholder="Search images..."
-    />
-    <button type="submit">Search</button>
-  </form>
-  <div class="gallery"></div>
-  <button class="load-more is-hidden">Load more</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Search</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+
+    <form class="search-form">
+      <input
+        type="text"
+        name="searchQuery"
+        autocomplete="off"
+        placeholder="Search images..."
+      />
+      <button type="submit">Search</button>
+    </form>
+
+
+    <div class="gallery"></div>
+
+
+    <button class="load-more" style="display: none">Load more</button>
+
+
+    <div class="loader" style="display: none">
+      <div class="spinner"></div>
+    </div>
 
  
-  <div class="loader">
-    <div class="spinner"></div>
-  </div>
-
-  <script type="module" src="./main.js"></script>
-</body>
+    <script type="module" src="./main.js"></script>
+  </body>
 </html>

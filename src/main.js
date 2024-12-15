@@ -3,56 +3,50 @@ import { fetchImages } from './js/pixabay-api.js';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
-const form = document.querySelector('#search-form');
+const form = document.querySelector('.search-form');
 const input = document.querySelector('input[name="searchQuery"]');
 const gallery = document.querySelector('.gallery');
-const loader = document.querySelector('.loader'); // Елемент для індикатора завантаження
+const loader = document.querySelector('.loader');
 
 let currentPage = 1;
 let currentQuery = '';
-const perPage = 12; // Кількість зображень на сторінку
+const perPage = 12;
+let observer = null;
 
 form.addEventListener('submit', onSearch);
 
 async function onSearch(event) {
   event.preventDefault();
-
   const query = input.value.trim();
   if (!query) {
     showWarning('Please enter a search query.');
     return;
   }
-
   if (query !== currentQuery) {
-    resetGallery(); // Очистити галерею, якщо пошуковий запит змінився
-    currentPage = 1; // Скинути номер сторінки
+    resetGallery();
+    currentPage = 1;
   }
   currentQuery = query;
-
   try {
-    toggleLoader(true); // Показати індикатор завантаження
-
+    toggleLoader(true);
     const { hits, totalHits } = await fetchImages(query, currentPage, perPage);
     if (!hits || hits.length === 0) {
       showWarning('No images found for your query. Try again!');
       return;
     }
-
-    if (currentPage === 1) {
-      showSuccess(`Found ${totalHits} images!`);
-    }
-
+    if (currentPage === 1) showSuccess(`Found ${totalHits} images!`);
     renderGallery(hits);
-    addInfiniteScroll(totalHits); // Додати нескінченний скролл
+    setupInfiniteScroll(totalHits);
   } catch (error) {
     showError(error.message || 'Something went wrong. Please try again later.');
   } finally {
-    toggleLoader(false); // Сховати індикатор завантаження
+    toggleLoader(false);
   }
 }
 
 function resetGallery() {
   gallery.innerHTML = '';
+  removeSentinel();
 }
 
 function toggleLoader(show) {
@@ -60,39 +54,27 @@ function toggleLoader(show) {
 }
 
 function showWarning(message) {
-  iziToast.warning({
-    title: 'Warning',
-    message,
-    position: 'topRight',
-  });
+  iziToast.warning({ title: 'Warning', message, position: 'topRight' });
 }
 
 function showSuccess(message) {
-  iziToast.success({
-    title: 'Success',
-    message,
-    position: 'topRight',
-  });
+  iziToast.success({ title: 'Success', message, position: 'topRight' });
 }
 
 function showError(message) {
-  iziToast.error({
-    title: 'Error',
-    message,
-    position: 'topRight',
-  });
+  iziToast.error({ title: 'Error', message, position: 'topRight' });
 }
 
-// Нескінченний скролл
-function addInfiniteScroll(totalHits) {
-  const observer = new IntersectionObserver(async (entries) => {
+function setupInfiniteScroll(totalHits) {
+  if (observer) observer.disconnect();
+  const sentinel = createSentinel();
+  observer = new IntersectionObserver(async (entries) => {
     if (entries[0].isIntersecting) {
       if (currentPage * perPage >= totalHits) {
         showWarning('You have reached the end of the results.');
         observer.disconnect();
         return;
       }
-
       currentPage++;
       toggleLoader(true);
       try {
@@ -105,7 +87,20 @@ function addInfiniteScroll(totalHits) {
       }
     }
   }, { threshold: 1.0 });
+  observer.observe(sentinel);
+}
 
+function createSentinel() {
+  let sentinel = document.querySelector('.sentinel');
+  if (!sentinel) {
+    sentinel = document.createElement('div');
+    sentinel.classList.add('sentinel');
+    gallery.after(sentinel);
+  }
+  return sentinel;
+}
+
+function removeSentinel() {
   const sentinel = document.querySelector('.sentinel');
-  if (sentinel) observer.observe(sentinel);
+  if (sentinel) sentinel.remove();
 }

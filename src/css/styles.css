@@ -81,3 +81,12 @@
     transform: rotate(360deg);
   }
 }
+
+.is-hidden {
+  display: none;
+}
+
+.sentinel {
+  width: 100%;
+  height: 10px;
+}
